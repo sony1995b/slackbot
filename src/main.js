@@ -14,8 +14,12 @@ Vue.use(VueAxios, axios)
 
 import AxiosPlugin from 'vue-axios-cors';
 Vue.use(AxiosPlugin);
+
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded'
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
+
+import VueFlashMessage from 'vue-flash-message';
+Vue.use(VueFlashMessage)
 
 import ApiService from "@/services/api.service";
 import ApiURL from "@/config/api-url-list";

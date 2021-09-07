@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <h3 class="mb-4"> Slack Message Push </h3>
     <div class="input-group mb-4">
       <span class="input-group-text">Workspace List</span>
       <div class="dropdown">
@@ -7,7 +8,9 @@
           {{select_workspace.name}}
         </button>
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" >
-          <li v-for="(item,index) in workspaces" v-bind:key="index"><a class="dropdown-item" @click.prevent="selectWorkspace(item)">{{item.name}}</a></li>
+          <li v-for="(item,index) in workspaces" v-bind:key="index">
+            <a class="dropdown-item" @click.prevent="selectWorkspace(item)">{{item.name}}</a>
+          </li>
         </ul>
       </div>
       <span class="input-group-text">Users in Workspace</span>
@@ -25,6 +28,10 @@
       <textarea class="form-control" aria-label="With textarea" v-model="message_text"></textarea>
       <button type="button" class="btn btn-secondary" @click.p.prevent="sendMessage()">Send DM button</button>
     </div>
+    <flash-message
+        class="flash"
+        transitionName="fade"
+    ></flash-message>
   </div>
 </template>
 
@@ -41,31 +48,8 @@ export default {
   },
   data() {
     return {
-      workspaces: [
-          {
-            name: 'work1'
-          },
-          {
-            name: 'work2'
-          },
-          {
-            name: 'work3'
-          }
-      ],
-      users:[
-          {
-            name: 'user1'
-          },
-          {
-            name: 'user2'
-          },
-          {
-            name: 'user3'
-          }
-      ],
-      installer: {},
-      url: '',
-      app: {},
+      workspaces: [],
+      users:[],
       select_workspace: {name: 'select workspace'},
       select_user: {name: 'select user'},
       message_text: ''
@@ -75,8 +59,7 @@ export default {
     ...mapActions(['getWorkspaceList','getUserList', 'postMessage']),
     async sendMessage(){
       if (this.select_user.id !== 'all') {
-        let result = await this.postMessage({ token: this.select_workspace.token, id: this.select_user.id, text: this.message_text})
-        console.log(result)
+           await this.postMessage({ token: this.select_workspace.token, id: this.select_user.id, text: this.message_text})
       } else {
         this.users.map( async item => {
           console.log(item)
@@ -84,6 +67,9 @@ export default {
             await this.postMessage({ token: this.select_workspace.token, id: item.id, text: this.message_text})
         })
       }
+      this.flashSuccess( '메세지가 전송 되었습니다.',{
+          timeout: 3000
+        })
     },
     async selectUser(item) {
         this.select_user = item
@@ -113,8 +99,9 @@ export default {
   }
 }
 </script>
-
 <style>
+@import "~vue-flash-message/dist/vue-flash-message.min.css";
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
